@@ -19,6 +19,8 @@ We are using the following libraries for our project
 * [OpenCv](https://github.com/opencv/opencv) - To capture the Video feed and do the image processing
 * [Dllib](https://github.com/davisking/dlib) - Facial landmarking
 
+### References
+* [Tensor FLow API Documentation] (https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html)
 
 ### Approximate Roadmap/Workflow
 1. Working of the system
