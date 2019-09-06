@@ -1,0 +1,26 @@
+<annotation>
+	<folder>imgs</folder>
+	<filename>59.jpg</filename>
+	<path>F:\imgs\59.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>933</width>
+		<height>700</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>pothole</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>490</xmin>
+			<ymin>366</ymin>
+			<xmax>857</xmax>
+			<ymax>485</ymax>
+		</bndbox>
+	</object>
+</annotation>
