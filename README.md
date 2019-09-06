@@ -15,7 +15,7 @@ Minor/Major project B.Tech
 
 We are using the following libraries for our project
 
-* [Tenso rFLow API](https://github.com/tensorflow/models/tree/master/research/object_detection)- To Train the models on the potholes dataset
+* [Tensor FLow API](https://github.com/tensorflow/models/tree/master/research/object_detection)- To Train the models on the potholes dataset
 * [OpenCv](https://github.com/opencv/opencv) - To capture the Video feed and do the image processing
 * [Dllib](https://github.com/davisking/dlib) - Facial landmarking
 
