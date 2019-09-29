@@ -1,1 +1,1 @@
-## This is the first attempt to train using 100 Images 
+## This is the second attempt to train using 300 Images 
