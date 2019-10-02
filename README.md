@@ -20,7 +20,8 @@ We are using the following libraries for our project
 * [Dllib](https://github.com/davisking/dlib) - Facial landmarking
 
 ### References
-* [Tensor FLow API Documentation](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html)
+* [TensorFLow API Documentation](https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html)
+* [TensorFlow API](https://github.com/tensorflow/models)
 
 ### Approximate Roadmap/Workflow
 1. Working of the system
