@@ -86,6 +86,5 @@ with detection_graph.as_default():
             # Display output
             cv2.imshow('object detection', cv2.resize(image_np, (800, 600)))
             cv2.waitKey()
-            input()
             cv2.destroyAllWindows()
             
