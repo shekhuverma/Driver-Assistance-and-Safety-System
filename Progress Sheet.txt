@@ -1,0 +1,8 @@
+Things to try :-
+-> Using opencv to plot the things 
+-> improve the efficieny, make the system real time 
+
+
+
+things done :-
+-> trained the graph for 300 images
