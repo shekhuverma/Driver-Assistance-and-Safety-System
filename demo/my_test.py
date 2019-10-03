@@ -22,8 +22,10 @@ print("Test Directory path",test_images_path)
 #to get the paths of all the images in the test directory
 imagepaths=[os.path.join(test_images_path,f) for f in os.listdir(test_images_path)]
 
+
+
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
-PATH_TO_CKPT ='frozen_inference_graph_11213.pb'
+PATH_TO_CKPT ="graph_to_be_tested"+'//'+os.listdir("graph_to_be_tested")[0]
 
 # List of the strings that is used to add correct label for each box.
 PATH_TO_LABELS = 'label_map.pbtxt'
