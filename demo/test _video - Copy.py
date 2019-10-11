@@ -1,4 +1,3 @@
-
 import numpy as np
 import os
 import six.moves.urllib as urllib
@@ -8,7 +7,6 @@ import tensorflow as tf
 import zipfile
 import cv2
 
-
 from collections import defaultdict
 from io import StringIO
 from matplotlib import pyplot as plt
@@ -16,9 +14,6 @@ from PIL import Image
 from utils import label_map_util
 from utils import visualization_utils as vis_util
 
-
-
-start=time.time()
 # Define the video stream
 cap = cv2.VideoCapture("video.mp4")  # Change only if you have more than one webcams
 
@@ -57,42 +52,38 @@ def load_image_into_numpy_array(image):
     return np.array(image.getdata()).reshape(
         (im_height, im_width, 3)).astype(np.uint8)
 
-print("Total time taken in setup is = " ,time.time()-start,"seconds")
-input("Press enter to start")
-start=0
+
 # Detection
 with detection_graph.as_default():
     with tf.Session(graph=detection_graph) as sess:
+        # Extract image tensor
+        image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
+        # Extract detection boxes
+        boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
+        # Extract detection scores
+        scores = detection_graph.get_tensor_by_name('detection_scores:0')
+        # Extract detection classes
+        classes = detection_graph.get_tensor_by_name('detection_classes:0')
+        # Extract number of detectionsd
+        num_detections = detection_graph.get_tensor_by_name('num_detections:0')
         while True:
             start=time.time()
             # Read frame from camera
             ret,image_np = cap.read()
             # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
             image_np_expanded = np.expand_dims(image_np, axis=0)
-            # Extract image tensor
-            image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
-            # Extract detection boxes
-            boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
-            # Extract detection scores
-            scores = detection_graph.get_tensor_by_name('detection_scores:0')
-            # Extract detection classes
-            classes = detection_graph.get_tensor_by_name('detection_classes:0')
-            # Extract number of detections
-            num_detections = detection_graph.get_tensor_by_name('num_detections:0')
+            
             # Actual detection.
             (boxes, scores, classes, num_detections) = sess.run([boxes, scores, classes, num_detections],feed_dict={image_tensor: image_np_expanded})
-            
             # Visualization of the results of a detection.
-            vis_util.visualize_boxes_and_labels_on_image_array(image_np,np.squeeze(boxes),np.squeeze(classes).astype(np.int32),np.squeeze(scores),
-                category_index,use_normalized_coordinates=True,line_thickness=5)
+
+            ##vis_util.visualize_boxes_and_labels_on_image_array(image_np,np.squeeze(boxes),np.squeeze(classes).astype(np.int32),np.squeeze(scores),
+##            category_index,use_normalized_coordinates=True,line_thickness=8)
 
             # Display output
             cv2.imshow('object detection', cv2.resize(image_np, (800, 600)))
-
-            try:            
-                fps=1/(time.time()-start)
-            except:
-                continue
+            
+            fps=1/(time.time()-start)
             print("The FPS is =",fps)
             
             if cv2.waitKey(25) & 0xFF == ord('q'):

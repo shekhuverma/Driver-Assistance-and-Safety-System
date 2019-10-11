@@ -1,4 +1,5 @@
 demo/video.mp4
-.mp4
+demo/video_1.mp4
 /Training_1/training
+/Training_1/trained-inference-graphs
 /pre-trained model

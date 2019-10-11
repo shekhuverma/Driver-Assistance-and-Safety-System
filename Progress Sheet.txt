@@ -6,3 +6,5 @@ Things to try :-
 
 things done :-
 -> trained the graph for 300 images
+-> way better results with around 23K steps
+-> trained the graph upto 31K steps
