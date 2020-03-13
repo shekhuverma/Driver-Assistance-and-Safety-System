@@ -1,5 +1,19 @@
+Training_2/
 demo/video.mp4
 demo/video_1.mp4
 /Training_1/training
 /Training_1/trained-inference-graphs
-/pre-trained model
+/Training_1/pre-trained model
+
+
+
+
+/Training_2/pre-trained model
+/Training_2/training
+/Training_2/trained-inference-graphs
+
+
+/Training_3
+
+
+/yolo-object-detection

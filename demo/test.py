@@ -71,8 +71,7 @@ with detection_graph.as_default():
             # Extract detection classes
             classes = detection_graph.get_tensor_by_name('detection_classes:0')
             # Extract number of detectionsd
-            num_detections = detection_graph.get_tensor_by_name(
-                'num_detections:0')
+            num_detections = detection_graph.get_tensor_by_name('num_detections:0')
             # Actual detection.
             (boxes, scores, classes, num_detections) = sess.run(
                 [boxes, scores, classes, num_detections],
