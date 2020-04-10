@@ -1,0 +1,4 @@
+max according to the HSV histogram
+hue - 168,130
+sat-13
+value-1
