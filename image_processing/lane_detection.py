@@ -1,18 +1,8 @@
 import cv2
-import time,os,winsound
+import time,os,sys
 import numpy as np
-
-
-import threading
-
-def coordinates_reset():
-  threading.Timer(5.0, printit).start()
-  print "Hello, World!"
-
-printit()
-
-
-kernel = (1/159)*(np.array([(2,4,5,4,2),(4,9,12,9,4),(5,12,15,12,5),(4,9,12,9,4),(2,4,5,4,2)],dtype="float"))
+import concurrent.futures
+from threading import Timer, Event
 
 kernel1 = np.ones((3,3),np.uint8)
 ##cap = cv2.VideoCapture("I:\\Minor_Project\\Workflow\\demo\\video.mp4")
@@ -24,6 +14,7 @@ ret,frame=cap.read()
 height,width = frame.shape[:2]
 mask=np.full_like(frame,255)
 mask[:340,:]=0
+mask[height-60:height,:]=0
 mask=mask[:,:,2]
 
 half=width/2
@@ -31,7 +22,19 @@ half=width/2
 #BL,BR,TL,TR
 # coordinates={"BL":[0,height],"BR":[width,height],"TL":[0,340],"TR":[width,340]}
 
-coordinates=np.array(([0,height],[width,height],[0,340],[width,340]),dtype="int")
+coordinates=np.array(([[[0,height-40],[width,height-40],[0,340],[width,340]]]),dtype="int32")
+
+coordinates2=np.copy(coordinates)
+
+
+def roi(image,coordinates):
+	mask=np.zeros(image.shape,dtype='uint8')
+
+	cv2.fillPoly(mask,coordinates,255)
+	masked_image = cv2.bitwise_and(image,mask)
+	return masked_image
+
+
 def slope(x1,y1,x2,y2): 
 	return ((y2-y1)/(x2-x1))
 
@@ -53,20 +56,20 @@ def draw_lines(image,lines,image2):
 				except OverflowError as e:
 					return
 				if m<0: #Left side line
-					if coordinates[2][0]<=x:
-						coordinates[2][0]=x
+					if coordinates[0][2][0]<=x:
+						coordinates[0][2][0]=x
 
-					if coordinates[0][0]<x1:
-						coordinates[0][0]=x1
+					if coordinates[0][0][0]<x1:
+						coordinates[0][0][0]=x1
 
 				if m>0: #right side line
-					if coordinates[3][0]>=x:
-						coordinates[3][0]=x
+					if coordinates[0][3][0]>=x:
+						coordinates[0][3][0]=x
 
-					if coordinates[1][0]>x1:
-						coordinates[1][0]=x1
+					if coordinates[0][1][0]>x1:
+						coordinates[0][1][0]=x1
 
-				cv2.line(image,(x,320),(x1,height),[0,255,0],2)
+				# cv2.line(image,(x,320),(x1,height),[0,255,0],2)
 
 				# image=cv2.circle(image,(x,320),50,(255,255,255),5)
 				# image=cv2.circle(image,(x1,height),50,(255,255,255),5)
@@ -76,32 +79,75 @@ def draw_lines(image,lines,image2):
 		# print(e)
 		pass
 
+
+def reset():
+	if not done.is_set():
+		print("Clearing coordinates")
+		coordinates=coordinates2
+		Timer(10, reset).start()
+
+done = Event()
+
+Timer(10, reset).start()
+
+
+if __name__=='__main__':
 #Loop to acess the video feed
-while True:
-	last_time=time.time()
-	ret,frame=cap.read()
-	frame_cvt=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-	frame_cvt2=np.copy(frame_cvt)
-	frame_cvt=cv2.bitwise_and(frame_cvt,frame_cvt,mask=mask)
-	# blur=cv2.GaussianBlur(frame_cvt,(7,7),0)
-	edges = cv2.Canny(frame_cvt,86,270) #found out using hit and try using the sliders , need some fine tuning
-	#these parameters need tu be fine tuned
-	# edges=cv2.GaussianBlur(edges,(7,7),0)
-	# edges = cv2.dilate(edges,kernel1,iterations = 1)
-	lines = cv2.HoughLinesP(edges,10,np.pi/180,100,np.array([]),170,5)
-	
-	draw_lines(frame_cvt,lines,frame_cvt2)
-	# print(coordinates)
-	for a in coordinates:
-		image=cv2.circle(frame_cvt,(a[0],a[1]),25,(255,255,255),5)
+	while True:
+		last_time=time.time()
+		ret,frame=cap.read()
+		frame_cvt=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+		frame_cvt2=np.copy(frame_cvt)
+		frame_cvt=cv2.bitwise_and(frame_cvt,frame_cvt,mask=mask)
+		frame_cvt=cv2.GaussianBlur(frame_cvt,(3,3),0)
+		edges = cv2.Canny(frame_cvt,86,270) #found out using hit and try using the sliders , need some fine tuning
+		# edges = cv2.Canny(frame_cvt,90,180)
+		#these parameters need tu be fine tuned
+		lines = cv2.HoughLinesP(edges,10,np.pi/180,100,np.array([]),170,5)
+
+		draw_lines(frame_cvt,lines,frame_cvt2)
+		# for a in coordinates[0]:
+		# 	image=cv2.circle(frame_cvt,(a[0],a[1]),25,(255,255,255),5)
+
+
+		temp=roi(edges,coordinates)
 		
-	cv2.imshow("frame_cvt",frame_cvt)
-	# cv2.imshow("frame_cvt2",frame_cvt2)
-	# cv2.imshow("Edges",edges)
-	fps=1.0/(time.time()-last_time)
-	print("FPS =",fps)
-	last_time=time.time()
-	if cv2.waitKey(25) & 0xFF == ord('q'):
-		cv2.destroyAllWindows()
-		break
+		contours,hierarchy = cv2.findContours(temp,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+
+
+
+		# for a in contours:
+		# 	x,y,w,h = cv2.boundingRect(a)
+		# 	cv2.rectangle(frame_cvt,(x,y),(x+w,y+h),(255,255,255),2)
+
+		# areas = [cv2.contourArea(c) for c in contours]
+		# try:
+		# 	max_index = np.argmax(areas)
+		# except ValueError:
+		# 	continue
+
+		# cnt=contours[max_index] #Biggest contour
+		# x,y,w,h = cv2.boundingRect(cnt)
+		# cv2.rectangle(frame_cvt,(x,y),(x+w,y+h),(255,255,0),2)
+
+		contour_list = []
+		for contour in contours:
+			approx = cv2.approxPolyDP(contour,0.02*cv2.arcLength(contour,True),True)
+			area = cv2.contourArea(contour)
+			if ((len(approx) >10 ) & (len(approx) < 30) & (area > 20) ):
+				contour_list.append(contour)
+
+		cv2.drawContours(frame_cvt2, contour_list,  -1, (255,0,0), 2)
+		
+		cv2.imshow("frame_cvt",frame_cvt)
+		cv2.imshow("frame_cvt2",frame_cvt2)
+		cv2.imshow("temp",temp)
+		fps=1.0/(time.time()-last_time)
+		print("FPS =",fps)
+		last_time=time.time()
+		if cv2.waitKey(25) & 0xFF == ord('q'):
+			cv2.destroyAllWindows()
+			break
+
+	done.set()
 
